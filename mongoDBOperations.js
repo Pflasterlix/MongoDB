@@ -14,7 +14,7 @@ mongoose.connection.on('error', (err) => {
     console.error('MongoDB-Verbindungsfehler:', err);
 });
 
-// 1. Ein Schema für Benutzerprofile erstellen
+// Schema für Benutzerprofile
 const userSchema = new Schema({
     username: { type: String, required: true },
     email: { type: String, required: true },
@@ -22,33 +22,33 @@ const userSchema = new Schema({
     address: { type: String }
 });
 
-// 6. Ein Schema mit Validierungsregeln für Produktinformationen entwerfen
+// Schema für Produkte
 const productSchema = new Schema({
     name: { type: String, required: true },
     category: { type: String, required: true },
     price: { type: Number, required: true, min: 0 }
 });
 
-// 11. Beziehungen zwischen zwei Schemata herstellen (z.B. Benutzer und ihre Postings)
+// Schema für Postings
 const postSchema = new Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
     author: { type: Schema.Types.ObjectId, ref: 'User' }
 });
 
-// 15. Ein Schema für Kommentare mit Referenzen zu Postings erstellen
+// Schema für Kommentare
 const commentSchema = new Schema({
     content: { type: String, required: true },
     post: { type: Schema.Types.ObjectId, ref: 'Post' }
 });
 
-// 19. Ein Schema für Bestellungen mit einem Array von Produkt-IDs entwerfen
+// Schema für Bestellungen
 const orderSchema = new Schema({
     products: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     total: { type: Number, required: true }
 });
 
-// 21. Ein Soft-Delete-Feature implementieren, das Einträge nicht wirklich löscht
+// Soft-Delete-Feature für Benutzer
 userSchema.virtual('deleted').get(function() {
     return this.deletedAt !== null;
 });
@@ -58,23 +58,16 @@ userSchema.pre('findOneAndUpdate', function(next) {
     next();
 });
 
-// Modell für Benutzerprofil
+// Modelle für die Schemas erstellen
 const User = mongoose.model('User', userSchema);
-
-// Modell für Produkte
 const Product = mongoose.model('Product', productSchema);
-
-// Modell für Postings
 const Post = mongoose.model('Post', postSchema);
-
-// Modell für Kommentare
 const Comment = mongoose.model('Comment', commentSchema);
-
-// Modell für Bestellungen
 const Order = mongoose.model('Order', orderSchema);
 
-// 2. Eine Einfügeoperation für neue Benutzer implementieren
+// Einfügeoperation für neue Benutzer implementieren
 async function insertUser() {
+    // Neuen Benutzer erstellen
     const newUser = new User({
         username: 'exampleUser',
         email: 'user@example.com',
@@ -83,6 +76,7 @@ async function insertUser() {
     });
 
     try {
+        // Benutzer speichern
         const savedUser = await newUser.save();
         console.log('Neuer Benutzer hinzugefügt:', savedUser);
     } catch (error) {
@@ -90,7 +84,7 @@ async function insertUser() {
     }
 }
 
-// 3. Benutzer nach Namen suchen
+// Benutzer nach Namen suchen
 async function findUserByUsername(username) {
     try {
         const user = await User.findOne({ username });
@@ -100,7 +94,7 @@ async function findUserByUsername(username) {
     }
 }
 
-// 4. Eine Update-Operation schreiben, um Benutzerdaten zu aktualisieren
+// Update-Operation für Benutzerdaten
 async function updateUserByUsername(username, updates) {
     try {
         const result = await User.updateOne({ username }, updates);
@@ -110,7 +104,7 @@ async function updateUserByUsername(username, updates) {
     }
 }
 
-// 5. Benutzer anhand ihrer ID löschen
+// Benutzer anhand ihrer ID löschen
 async function deleteUserById(userId) {
     try {
         const result = await User.findByIdAndDelete(userId);
@@ -120,9 +114,7 @@ async function deleteUserById(userId) {
     }
 }
 
-// Weitere Funktionen und Operationen hier hinzufügen...
-
-// Beispielaufrufe für die obigen Funktionen (kannst du anpassen oder erweitern)
+// Hauptfunktion zum Ausführen der Operationen
 async function main() {
     await insertUser();
     await findUserByUsername('exampleUser');
@@ -132,7 +124,7 @@ async function main() {
     // Weitere Operationen hier einfügen...
 }
 
-// Hauptfunktion aufrufen, um den Code auszuführen
+// Hauptfunktion aufrufen
 main()
     .then(() => {
         console.log('Alle Operationen abgeschlossen');
